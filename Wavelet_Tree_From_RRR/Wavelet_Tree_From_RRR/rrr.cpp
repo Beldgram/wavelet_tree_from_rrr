@@ -17,8 +17,8 @@ RRR::RRR(string &bits){
 	int blocks_per_superblock = super_block_size / block_size;
 
 	typedef pair<int, int> block;
-
-	std::vector<block> blocks;
+	std::vector<block> converted_blocks;
+	std::vector<block> converted_super_blocks;
 
 	cout << "Size " << size << endl;
 	cout << "Blokovi " << block_size << endl;
@@ -44,21 +44,34 @@ RRR::RRR(string &bits){
 	}
 	cout << endl << endl;
 
+	converted_super_blocks.push_back(block(super_block_class, super_block_offset));
 
 	for (int i = 0; i < size; i++) {
 		char element = bits[i];
 		n++;
+		s++;
 		if (element == '1') {
 			block_class++;
 		}
 		if (n == block_size) {
 			cout << block_class;
-			//blocks.push_back((block_class, block_offset));
-			block_class = 0;
 			cout << "-";
 			block_offset++;
 			cout << block_offset << "|";
+			converted_blocks.push_back(block(block_class, block_offset));
+			super_block_class += block_class;
+			block_class = 0;
+			
 			n = 0;
+		}
+
+		if (s == super_block_size) {
+			cout << super_block_class;
+			cout << "-";
+			super_block_offset++;
+			cout << super_block_offset << "|";
+			converted_super_blocks.push_back(block(super_block_class, super_block_offset));
+			s = 0;
 		}
 
 	}
@@ -67,18 +80,22 @@ RRR::RRR(string &bits){
 
 	for (int i = 0; i < size; i++) {
 		char element = bits[i];
-		s++;
+		
 		if (element == '1') {
 			super_block_class++;
 		}
-		if (s == super_block_size) {
-			cout << super_block_class;
-			block_class = 0;
-			cout << "-";
-			super_block_offset++;
-			cout << super_block_offset << "|";
-			s = 0;
-		}
+		
 
+	}
+	
+	
+
+	cout << endl << endl;
+	for (auto b : converted_blocks) {
+		cout << b.first << "-" << b.second << "|"  ;
+	}
+	cout << endl << converted_super_blocks.capacity() << endl;
+	for (auto b : converted_super_blocks) {
+		cout << b.first << "-" << b.second << "|" ;
 	}
 }
