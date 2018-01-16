@@ -27,6 +27,9 @@
     <ClInclude Include="rrr.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="rrr_table.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
