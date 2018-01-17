@@ -5,18 +5,16 @@
 
 using namespace std;
 
-typedef vector<vector<pair<uint32_t, vector<uint32_t> > > > table_t;
-typedef pair<uint32_t, vector<uint32_t> > element_t;
-typedef vector<pair<uint32_t, vector<uint32_t> > > class_t;
+typedef pair<uint32_t, vector<uint8_t>> Block_and_Rank_at_bit_index_t;
+typedef vector<Block_and_Rank_at_bit_index_t> class_t;
+typedef vector<class_t> lookup_table_t;
 
 
 class RRRTable {
 public:
-	RRRTable(uint32_t block_size);
-	static uint32_t initialBlockLength;
+	RRRTable(int block_size);
 private:
-	table_t table_;
-	vector<uint32_t> bitsForOffset;
-	uint32_t nextPermutation(uint32_t v);
-	uint32_t firstElement(uint32_t c);
+	lookup_table_t lookup_table;
+	int nextPermutation(uint32_t v);
+	int firstElement(uint32_t c);
 };
