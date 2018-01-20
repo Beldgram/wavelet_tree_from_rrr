@@ -20,9 +20,9 @@ RRRTable::RRRTable(int b) {
 		class_t subtable;
 		
 		uint32_t v, initial;
-
+		
 		v = initial = firstElement(i);
-		int block = firstElement(b);
+		uint32_t block = firstElement(b);
 
 		//cout << v << "-" << block << "|";
 
@@ -57,24 +57,38 @@ RRRTable::RRRTable(int b) {
 
 	//cout << lookup_table[0][0].first << "!!!";
 
-	for (int i = 0; i < lookup_table[3].size(); i++) {
+	/*for (int i = 0; i < lookup_table[3].size(); i++) {
 		cout << lookup_table[3][i].first << "|";
 		for (int j = 0; j < lookup_table[3][i].second.size(); j++) {
 			cout << ((int)lookup_table[3][i].second[j]);
 		}
-		cout << "!" << endl;
+		//cout << "!" << endl;
 		//cout << lookup_table[2][i].first << " ";
-	}
+	}*/
 }
 
-int RRRTable::nextPermutation(uint32_t v) {
+uint32_t RRRTable::nextPermutation(uint32_t v) {
 	int t = (v | (v - 1)) + 1;
 	int w = t | ((((t & (~t + 1)) / (v & (~v + 1))) >> 1) - 1);
 	return w;
 }
 
-int RRRTable::firstElement(uint32_t c) {
+uint32_t RRRTable::firstElement(uint32_t c) {
 	return (1 << c) - 1;
 }
 
+uint32_t RRRTable::GetOffset(uint8_t classindex, uint32_t block) {
+
+	for (int i = 0; i < lookup_table[classindex].size(); ++i) {
+		if (block == lookup_table[classindex][i].first) {
+			return (uint32_t)i;
+		}
+	}
+
+	return 0;
+}
+
+lookup_table_t& RRRTable::getTable() {
+	return lookup_table;
+}
 

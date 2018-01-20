@@ -13,8 +13,10 @@ typedef vector<class_t> lookup_table_t;
 class RRRTable {
 public:
 	RRRTable(int block_size);
+	uint32_t GetOffset(uint8_t popcount, uint32_t block);
+	lookup_table_t& RRRTable::getTable();
 private:
 	lookup_table_t lookup_table;
-	int nextPermutation(uint32_t v);
-	int firstElement(uint32_t c);
+	uint32_t nextPermutation(uint32_t v);
+	uint32_t firstElement(uint32_t c);
 };
