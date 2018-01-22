@@ -151,11 +151,155 @@ uint64_t RRR::rank0(uint64_t index) {
 	return index + 1 - rank1(index);
 }
 
-uint64_t RRR::select1(uint64_t index) {
+uint64_t RRR::select1(uint64_t target) {
+	
+	uint32_t index = 0;
+	uint32_t super_block_index = 0;
+	uint32_t block_index = 0;
 
+	cout << endl << "super_block slecet " << converted_super_blocks[super_block_index + 1].first << endl;
+	cout << endl << "super_block slecet " << converted_blocks.size() << endl;
+
+	while (super_block_index + 1 < converted_super_blocks.size()) {
+		if (target >= converted_super_blocks[super_block_index].first && target < converted_super_blocks[super_block_index + 1].first) {
+			break;
+		}
+		super_block_index++;
+	}
+
+	cout << endl << "super index slecet " << super_block_index << endl;
+
+	uint32_t rankSum = converted_super_blocks[super_block_index].first;
+	uint32_t current_block_index = blocks_per_superblock * super_block_index;
+
+	while (1) {
+		uint32_t s = rankSum + converted_blocks[current_block_index].first;
+
+		if (s >= target) {
+			break;
+		}
+		else
+		{
+			rankSum += converted_blocks[current_block_index].first;
+			current_block_index++;
+		}
+	}
+	cout << endl << "current_block_index slecet" << current_block_index << endl;
+	index = current_block_index * block_size;
+	cout << endl << "Index slecet" << index << endl;
+	cout << endl << "RabkSUM slecet" << rankSum << endl;
+
+	uint32_t x = converted_blocks[current_block_index].first;
+	uint32_t y = lookup_table[converted_blocks[current_block_index].first][converted_blocks[current_block_index].second].first;
+	int j = 0;
+	uint32_t z = 0;
+	int rankCC = 0;
+
+	for (int j = block_size - 1; j >= 0; j--) {
+		
+		cout << endl << "X  " << y << endl;
+		
+
+		z = (y >> j) & 1;
+
+		cout << endl << "Z slecet " << z << endl;
+
+		rankSum += z;
+		
+		cout << endl << "RabkSUM slecet " << rankSum << endl;
+		if (rankSum == target) {
+			break;
+		}
+		index++;
+		
+		
+	}
+
+	return index;
+}
+
+uint64_t RRR::select0(uint64_t target) {
+
+	uint32_t index = 0;
+	uint32_t super_block_index = 0;
+	uint32_t block_index = 0;
+
+	cout << endl << "current_block_index slecet" << block_size*blocks_per_superblock - converted_super_blocks[super_block_index + 1].first << endl;
+
+	while (super_block_index + 1 < converted_super_blocks.size()) {
+		if (target < (block_size*blocks_per_superblock - converted_super_blocks[super_block_index+1].first)) {
+			break;
+		}
+		super_block_index++;
+	}
+
+	uint32_t rankSum = block_size*blocks_per_superblock - converted_super_blocks[super_block_index].first;
+	uint32_t current_block_index = blocks_per_superblock * super_block_index;
+	cout << endl << "RabkSUM slecet" << rankSum << endl;
+	cout << endl << "current_block_index slecet -----" << current_block_index << endl;
+	uint32_t s = 0;
+
+	while (1) {
+		s = rankSum + (block_size - converted_blocks[current_block_index].first);
+		cout << endl << "S--> " << s << endl;
+
+		if (s >= target) {
+			break;
+		}
+		else
+		{
+			rankSum += (block_size - converted_blocks[current_block_index].first);
+			current_block_index++;
+		}
+	}
+
+	cout << endl << "current_block_index slecet" << current_block_index << endl;
+	index = current_block_index * block_size;
+	cout << endl << "Index slecet" << index << endl;
+	cout << endl << "RabkSUM slecet" << rankSum << endl;
+
+	uint32_t x = converted_blocks[current_block_index].first;
+	uint32_t y = lookup_table[converted_blocks[current_block_index].first][converted_blocks[current_block_index].second].first;
+	int j = 0;
+	uint32_t z = 0;
+	int rankCC = 0;
+
+	for (int j = block_size - 1; j >= 0; j--) {
+
+		cout << endl << "X  " << y << endl;
+
+
+		z = (~(y >> j)) & 1;
+
+		cout << endl << "Z slecet " << z << endl;
+
+		rankSum += z;
+
+		cout << endl << "RabkSUM slecet " << rankSum << endl;
+		if (rankSum == target) {
+			break;
+		}
+		index++;
+
+
+	}
+
+
+	return 0;
 }
 
 uint8_t RRR::access(uint64_t index) {
 	
-	return 0;
+	// Determine index of block in which is given index
+	uint32_t block_index = index / block_size;
+
+	// Determine index of bit on given index inside a block
+	int index_in_block = index % block_size;
+
+	uint32_t x = lookup_table[converted_blocks[block_index].first][converted_blocks[block_index].second].first;
+
+	uint8_t y = (x >> (block_size - 1 - index_in_block)) & 1;
+
+
+	return y;
 }

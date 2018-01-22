@@ -16,8 +16,8 @@ public:
 	RRR(string &bits);
 	uint64_t rank1(uint64_t index);
 	uint64_t rank0(uint64_t index);
-	uint64_t select1(uint64_t index);
-	uint64_t select0(uint64_t index);
+	uint64_t select1(uint64_t target);
+	uint64_t select0(uint64_t target);
 	uint8_t RRR::access(uint64_t index);
 private:
 	int block_size;
