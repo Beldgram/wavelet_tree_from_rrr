@@ -30,6 +30,9 @@
     <ClInclude Include="rrr_table.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="wavelet_tree.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

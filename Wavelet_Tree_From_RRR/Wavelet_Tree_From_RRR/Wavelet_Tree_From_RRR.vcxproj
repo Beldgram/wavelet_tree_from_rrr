@@ -150,6 +150,7 @@
     <ClInclude Include="rrr_table.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="wavelet_tree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rrr.cpp" />
