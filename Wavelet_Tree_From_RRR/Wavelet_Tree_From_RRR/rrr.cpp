@@ -9,11 +9,30 @@
 
 using namespace std;
 
+//Used to calculate super_block_offset_size
+int binomialCoeff(int n, int k)
+{
+	int res = 1;
+
+	// Since C(n, k) = C(n, n-k)
+	if (k > n - k)
+		k = n - k;
+
+	// Calculate value of [n * (n-1) *---* (n-k+1)] / [k * (k-1) *----* 1]
+	for (int i = 0; i < k; ++i)
+	{
+		res *= (n - i);
+		res /= (i + 1);
+	}
+
+	return res;
+}
+
 //Constructor
 RRR::RRR(string &bits){
 
 	//Lenght of the input string
-	int size = bits.length();
+	size = bits.length();
 
 	//How much bits there are in a single block
 	block_size =floor(log2(size) / 2);
@@ -23,6 +42,9 @@ RRR::RRR(string &bits){
 
 	//How much blocks there are in a single superblock
 	blocks_per_superblock = super_block_size / block_size;
+	super_block_offset_size = ceil(log2(binomialCoeff(block_size, ceil (log2(block_size+1)))));
+	if (super_block_offset_size == 0) super_block_offset_size++;
+	//cout << ceil(log2(block_size + 1)) << endl;
 
 	//Creation and acquiring of the lookup table
 	RRRTable RRR_table_object(block_size); 
@@ -37,6 +59,7 @@ RRR::RRR(string &bits){
 	int n = 0;
 	int s = 0;
 	int x = 0;
+	int increment = 1;
 
 	//First super block 0-0
 	converted_super_blocks.push_back(block(super_block_class, super_block_offset));
@@ -75,10 +98,11 @@ RRR::RRR(string &bits){
 			n = 0;
 
 			//Super block
-			if (s == super_block_size || (i + 1) == bits.size()) {
+			if (s == super_block_size) {
 				//cout << super_block_class;
 				//cout << "-";
-				super_block_offset++;
+				super_block_offset = increment * blocks_per_superblock * (block_size + super_block_offset_size);
+				increment++;
 				//cout << super_block_offset << "|";
 				converted_super_blocks.push_back(block(super_block_class, super_block_offset));
 				s = 0;
@@ -94,6 +118,10 @@ RRR::RRR(string &bits){
 //sequnce to the given index
 //Based of the pseudo code from http://alexbowe.com/rrr/
 uint64_t RRR::rank1(uint64_t index){
+
+	if (index > size) {
+		throw invalid_argument("RRR > Rank index value excedes the size of the input string");
+	}
 
 	// Determine index of block and super block which contains bit with index given as parameter
 	uint64_t block_index = floor(index / block_size);
@@ -126,7 +154,6 @@ uint64_t RRR::rank1(uint64_t index){
 
 	return rank_sum;
 
-	return 0;
 }
 
 
@@ -140,6 +167,9 @@ uint64_t RRR::rank0(uint64_t index) {
 //Returns the index of the target-th bit with value 1
 uint64_t RRR::select1(uint64_t target) {
 	
+	if (target > size) {
+		throw invalid_argument("RRR > Select target value excedes the size of the input string");
+	}
 
 	uint32_t index = 0;
 	uint32_t super_block_index = 0;
@@ -165,7 +195,7 @@ uint64_t RRR::select1(uint64_t target) {
 
 	// Iterate through blocks and add their popcounts to the rankSum until value of
 	// s is higher than target
-	while (current_block_index < blocks_per_superblock) {
+	while (1) {
 		uint32_t s = rankSum + converted_blocks[current_block_index].first;
 
 		if (s >= target) {
@@ -216,6 +246,10 @@ uint64_t RRR::select1(uint64_t target) {
 //Returns the index of the target-th bit with value 0
 uint64_t RRR::select0(uint64_t target) {
 
+	if (target > size) {
+		throw invalid_argument("RRR > Select target value excedes the size of the input string");
+	}
+
 	uint32_t index = 0;
 	uint32_t super_block_index = 0;
 	uint32_t block_index = 0;
@@ -225,24 +259,27 @@ uint64_t RRR::select0(uint64_t target) {
 	// Find superblock whose value of rank 0 is lower than target value, but value of next is
 	// bigger than target value
 	while (super_block_index + 1 < converted_super_blocks.size()) {
-		if (target < (block_size*blocks_per_superblock - converted_super_blocks[super_block_index+1].first)) {
+		if (target > (rank0(block_size*blocks_per_superblock*super_block_index)) && target < (rank0(block_size*blocks_per_superblock*(super_block_index+1)))) {
 			break;
 		}
 		super_block_index++;
 	}
 
-	uint32_t rankSum = block_size*blocks_per_superblock - converted_super_blocks[super_block_index].first;
 	uint32_t current_block_index = blocks_per_superblock * super_block_index;
+	index = super_block_index * block_size * blocks_per_superblock;
+	uint32_t rankSum = rank0(block_size*blocks_per_superblock*super_block_index) - 1;
+	
 	//cout << endl << "RabkSUM slecet" << rankSum << endl;
-	//cout << endl << "current_block_index slecet -----" << current_block_index << endl;
+	//cout << endl << "current_block_index slecet ----!!!!-" << current_block_index << endl;
+	//cout << endl << "Index slecet" << index << endl;
 	uint32_t s = 0;
 
 
 	// Iterate through blocks and add their popcounts to the rankSum until value of
 	// s is higher than target
-	while (current_block_index < blocks_per_superblock) {
+	while (1) {
 		s = rankSum + (block_size - converted_blocks[current_block_index].first);
-		cout << endl << "S--> " << s << endl;
+		//cout << endl << "S--> " << s << endl;
 
 		if (s >= target) {
 			break;
@@ -254,7 +291,7 @@ uint64_t RRR::select0(uint64_t target) {
 		}
 	}
 
-	//cout << endl << "current_block_index slecet" << current_block_index << endl;
+	//cout << endl << "current_block_index slecet AJMO" << current_block_index << endl;
 	index = current_block_index * block_size;
 	//cout << endl << "Index slecet" << index << endl;
 	//cout << endl << "RabkSUM slecet" << rankSum << endl;
@@ -285,8 +322,8 @@ uint64_t RRR::select0(uint64_t target) {
 
 	}
 
-
-	return 0;
+	//cout << endl << "Index slecet" << index << endl;
+	return index;
 }
 
 uint8_t RRR::access(uint64_t index) {
@@ -306,3 +343,4 @@ uint8_t RRR::access(uint64_t index) {
 
 	return y;
 }
+

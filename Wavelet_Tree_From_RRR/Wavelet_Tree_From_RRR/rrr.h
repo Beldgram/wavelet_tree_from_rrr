@@ -35,6 +35,9 @@ public:
 	//Returns the value at the index
 	uint8_t RRR::access(uint64_t index);
 
+	//Lenght of the input string
+	int size;
+
 private:
 
 	//How much bits there are in a single block
@@ -42,6 +45,7 @@ private:
 
 	//How much blocks there are in a single superblock
 	int blocks_per_superblock;
+	int super_block_offset_size;
 
 	//Blocks and superblocks
 	std::vector<block> converted_blocks;
