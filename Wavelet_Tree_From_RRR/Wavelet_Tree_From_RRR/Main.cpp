@@ -18,13 +18,12 @@ using namespace std;
 int main()
 {
 
-	const std::string input("Peter Piper_picked_a_peck_of_pickled_peppers$");
+	const std::string input("0011101000111011011000000101100");
 
 	dictionary abc(input);
 
 	using trivial_wtree = wtree<trivial_bitvector>;
 	trivial_wtree w(input, abc);
-	std::cout << "rank(10, p) = " << w.rank(10, 'P') << "\n";
 
 
 
