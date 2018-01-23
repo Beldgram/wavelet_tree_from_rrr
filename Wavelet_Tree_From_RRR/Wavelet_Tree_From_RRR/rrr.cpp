@@ -48,7 +48,7 @@ RRR::RRR(string &bits){
 		s++;
 		
 		//Class increment
-		if (element == '1') {
+		if (element == 1) {
 			block_class++;
 			content = (content << 1) + 1;
 		}

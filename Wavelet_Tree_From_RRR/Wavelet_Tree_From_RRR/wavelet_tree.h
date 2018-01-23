@@ -10,6 +10,8 @@
 #include <string>
 #include "rrr.h"
 
+#include <iostream>
+
 struct dictionary {
 	explicit dictionary(const std::string& input)
 	{
@@ -17,6 +19,7 @@ struct dictionary {
 		std::copy(std::cbegin(input), std::cend(input), std::inserter(abc, std::end(abc)));
 		m_abc = std::string(std::cbegin(abc), std::cend(abc));
 	}
+	
 
 	// linear lookup of bit value in the dictionary
 	bool get_bit(char c) const
@@ -73,6 +76,7 @@ struct trivial_bitvector {
 		return static_cast<int>(std::count(std::cbegin(m_bitvec), pos, val));
 	}
 
+
 private:
 	std::vector<bool> m_bitvec;
 };
@@ -102,6 +106,7 @@ private:
 			// if the dictionary contains 1 or 2 elements then this is a terminal node
 			size_t abc_len = abc.length();
 			if (abc_len <= 2) return;
+			string bits;
 
 			// separate the input string into the left and right subtree part using the bit vector flags
 			std::string left, right;
@@ -112,7 +117,13 @@ private:
 				else {
 					left.push_back(c);
 				}
+				bits.push_back(m_abc.get_bit(c));
 			}
+
+			//for (int i = 0; i < bits.size(); i++) {
+				//cout << (int)bits[i];
+			//}
+			RRR RRRa(bits);
 
 			// if there are more than two elements in the input dictionary than the left and right nodes must not be empty
 			// to get a balanced tree;assert checks if its argument (which must have scalar type) compares equal to zero.
