@@ -74,8 +74,16 @@ int main(int argc, char** argv) {
 	dictionary abc(input);
 
 	using trivial_wtree = wtree<trivial_bitvector>;
+	high_resolution_clock::time_point startTime = high_resolution_clock::now();
+
+
 	trivial_wtree w(input, abc);
 
+	high_resolution_clock::time_point endTime = high_resolution_clock::now();
+	auto duration = duration_cast<microseconds>(endTime - startTime).count();
+	printf("Done building tree - %ld ms (%ld us)\n", duration / 1000, duration);
+
+	w.rank(10, 'A');
 
 	//std::cout << "rank(10, p) = " << w.rank(10, 'P') << "\n";
 
